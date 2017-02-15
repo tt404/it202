@@ -57,42 +57,28 @@
         tr:nth-child(even) {
             background-color: #dddddd;
         }
+        
+        #map {
+            height: 100%;
+        }
+        
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
     </style>
 
 </head>
 
 <body>
-
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-                <a class="navbar-brand" href="#">Project 2</a>
-            </div>
-            <div id="navbar" class="navbar-collapse collapse">
-                <form class="navbar-form navbar-right">
-                    <div class="form-group">
-                        <input type="text" placeholder="Email" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <input type="password" placeholder="Password" class="form-control">
-                    </div>
-                    <button type="submit" class="btn btn-success">Sign in</button>
-                </form>
-            </div>
-            <!--/.navbar-collapse -->
-        </div>
-    </nav>
-
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
         <div class="container">
-            <h1>Pothole data</h1>
+            <h1>
+                <center>Potholes by area</center>
+            </h1>
         </div>
     </div>
 
@@ -118,9 +104,6 @@
 
     <script>
         $(function() {
-            console.log("ran");
-
-            console.log("click event");
             var url = "https://data.cityofchicago.org/resource/7as2-ds3y.json?$query=SELECT%20community_area,count(*)%20as%20potholes%20group%20by%20community_area%20order%20by%20community_area";
             $.ajax({
                 url: url,
@@ -140,6 +123,121 @@
         })
     </script>
 
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        $(function() {
+            // Load the Visualization API and the corechart package.
+            google.charts.load('current', {
+                'packages': ['corechart']
+            });
+
+            // Set a callback to run when the Google Visualization API is loaded.
+            google.charts.setOnLoadCallback(drawChart);
+
+            // Callback that creates and populates a data table,
+            // instantiates the pie chart, passes in the data and
+            // draws it.
+            function drawChart() {
+                var url = "https://data.cityofchicago.org/resource/7as2-ds3y.json?$query=SELECT%20community_area,count(*)%20as%20potholes%20where%20status%20=%20%27Open%27%20group%20by%20community_area%20order%20by%20community_area";
+
+                // Create the data table.
+                var data = new google.visualization.DataTable();
+                data.addColumn('string', 'Community Area');
+                data.addColumn('number', 'Open potholes');
+
+                $.ajax({
+                    url: url,
+                    method: 'GET',
+                }).done(function(result) {
+                    $.each(result, function(idx, val) {
+
+                        //console.log(val.community_area + " " + val.potholes);
+                        var toAdd = (val.community_area);
+                        if (typeof toAdd == "undefined") toAdd = "Other";
+                        toAdd = toAdd.toString();
+
+                        data.addRows([
+                            [toAdd, parseInt(val.potholes)]
+                        ]);
+                    })
+
+
+
+                    // Instantiate and draw our chart, passing in some options.
+                    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                    chart.draw(data, options);
+                    //console.log(data);
+
+                }).fail(function(err) {
+                    throw err;
+                });
+
+                // Set chart options
+                var options = {
+                    'title': 'Potholes per area',
+                    'width': 400,
+                    'height': 300
+                };
+                // - google maps key
+            }
+        });
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDcqpafZB_5TPrYlkH5KjEModEyPZAfVzc&libraries=visualization">
+    </script>
+    <div>
+        <h1>
+            <center>Pie Chart</center>
+        </h1>
+    </div>
+    <center>
+        <div id="chart_div"></div>
+    </center>
+    <div>
+        <h1>
+            <center>Heat Map</center>
+        </h1>
+    </div>
+    <div id="map"></div>
+    <script>
+        $(function() {
+            var map;
+            var url = "https://data.cityofchicago.org/resource/7as2-ds3y.json?$query=SELECT%20latitude,longitude%20where%20status%20=%20%27Open%27%20";
+            $.ajax({
+                url: url,
+                method: 'GET',
+            }).done(function(result) {
+
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 12,
+                    center: {
+                        lat: 41.85,
+                        lng: -87.64999999999998
+                    },
+                    mapTypeId: 'terrain'
+                });
+
+                var heatmapData = [];
+
+                $.each(result, function(idx, val) {
+
+                    var lat = val.latitude;
+                    var long = val.longitude;
+                    if (typeof lat == "undefined" || typeof long == "undefined") return true;
+                    var latLng = new google.maps.LatLng(lat, long);
+                    heatmapData.push(latLng);
+                })
+
+                var heatmap = new google.maps.visualization.HeatmapLayer({
+                    data: heatmapData,
+                    dissipating: true,
+                    map: map
+                });
+
+            }).fail(function(err) {
+                throw err;
+            });
+        });
+    </script>
 </body>
 
 </html>
