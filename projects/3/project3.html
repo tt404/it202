@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>repl.it</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <style>
+        canvas {
+            background-color: #001E62;
+            z-index: 27;
+        }
+        
+        body {
+            background-color: #000000;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .ts {
+            display: none;
+            width: "786px";
+            height: "480px";
+        }
+    </style>
+</head>
+
+<body>
+
+    <img id="player" width="64px" height="64px" src="player.png" class="hidden">
+    <img id="mon" width="64px" height="64px" src="mon.png" class="hidden">
+    <img id="rocket" width="64px" height="64px" src="rocket.png" class="hidden">
+    <img id="ammo" width="64px" height="64px" src="ammo.png" class="hidden">
+    <img id="titlescreen" width="786px" height="480px" src="titlescreen.png" class="ts">
+    <img id="background" width="64px" height="64px" src="background.png" class="hidden">
+    <img id="gameover" width="64px" height="64px" src="gameover.jpg" class="hidden">
+
+    <canvas width="786px" height="480px" id="canvas2"></canvas>
+    <script>
+        var canvas2 = document.getElementById("canvas2");
+        var ctx2 = canvas2.getContext("2d");
+        var canvasX = canvas2.width / 2;
+        var canvasY = canvas2.height / 2;
+        var direction = -1;
+        var started = false;
+
+        var playerSprite = document.getElementById("player");
+        var titleScreen = document.getElementById("titlescreen");
+        var enemy = document.getElementById("mon");
+        var ammoimg = document.getElementById("ammo");
+        var rocketimg = document.getElementById("rocket");
+        var gameOverImg = document.getElementById("gameover");
+        var tics = 0;
+        var started = false;
+        var bx1 = 0;
+        var bx2 = 786;
+        var py1 = 0;
+        var movedir = 0;
+        var fire = false;
+        var firedelay = 30;
+        var missiles = [];
+        var ammos = [];
+        var monsters = [];
+        var ammo = 5;
+        var health = 3;
+        var invulTime = 60;
+        var spawnTime = 0;
+        var score = 0;
+        var pwidth = 80;
+        var pheight = 80;
+        var gameOver = false;
+
+        function rocket(x, y) {
+            this.y = y + 18;
+            this.x = x + 64;
+        }
+
+        function monster(x, y, health) {
+            this.y = y;
+            this.x = x;
+            this.health = health;
+        }
+
+        function ammoclass(x, y) {
+            this.y = y;
+            this.x = x;
+        }
+
+
+        function checkCollision(x1, y1, w1, h1, x2, y2, w2, h2) {
+            if (x1 < x2 + w2 &&
+                x1 + w1 > x2 &&
+                y1 < y2 + h2 &&
+                h1 + y1 > y2) {
+                return true;
+            }
+            return false;
+        }
+
+        function restartGame() {
+            tics = 0;
+            started = false;
+            bx1 = 0;
+            bx2 = 786;
+            py1 = 0;
+            movedir = 0;
+            fire = false;
+            firedelay = 30;
+            missiles = [];
+            ammos = [];
+            monsters = [];
+            ammo = 5;
+            health = 3;
+            invulTime = 60;
+            spawnTime = 0;
+            score = 0;
+            pwidth = 80;
+            pheight = 80;
+            gameOver = false;
+        }
+
+        $(function() {
+
+
+            function update() {
+                if (started == false) {
+                    renderTitleScreen();
+                }
+                else if (gameOver == true) {
+                    renderGameOver();
+                }
+                else {
+                    gameLoop();
+                }
+                window.requestAnimationFrame(update);
+            }
+            update();
+
+            function renderGameOver() {
+                if (tics++ > 60) tics = 0;
+
+                ctx2.font = "32px Helvetica";
+                ctx2.textAlign = "left";
+                ctx2.drawImage(gameOverImg, 0, 0);
+
+                if (tics < 30) {
+                    ctx2.fillStyle = "#00FFFF";
+                    ctx2.fillText("Click to continue", 500, 470);
+                }
+
+                ctx2.fillStyle = "#FFFF00";
+                ctx2.fillText("Final Score: " + score, 40, 480 / 2);
+
+            }
+
+            function gameLoop() {
+                if (movedir == 1) py1 -= 6;
+                else if (movedir == 2) py1 += 6;
+
+                for (var i = 0; i < missiles.length; i++) {
+                    missiles[i].x += 6;
+                    if (missiles[i].x > 786) {
+                        missiles.splice(i, 1);
+                        continue;
+                    }
+
+
+                    for (var j = 0; j < monsters.length; j++) {
+                        if (checkCollision(monsters[j].x, monsters[j].y, 86, 90, missiles[i].x, missiles[i].y, 27, 12)) {
+                            monsters[j].health--;
+                            if (monsters[j].health == 0) {
+                                score += 300;
+                                monsters.splice(j, 1);
+                                missiles.splice(i, 1);
+                                break;
+                            }
+                            missiles.splice(i, 1);
+                            break;
+                        }
+                    }
+
+                }
+
+                for (var i = 0; i < ammos.length; i++) {
+                    ammos[i].x -= 6;
+                    if (ammos[i].x < -200) ammos.splice(i, 1);
+                    if (checkCollision(0, py1, 80, 82, ammos[i].x, ammos[i].y, 108, 42)) {
+                        ammo += 5;
+                        ammos.splice(i, 1);
+                    }
+                }
+
+                for (var i = 0; i < monsters.length; i++) {
+                    monsters[i].x -= 6;
+                    if (monsters[i].x < -200) {
+                        monsters.splice(i, 1);
+                        continue;
+                    }
+
+
+
+
+                    if (checkCollision(0, py1, 80, 82, monsters[i].x, monsters[i].y, 86, 90)) {
+                        health--;
+
+                        if (health == 0) {
+                            gameOver = true;
+                        }
+                        monsters.splice(i, 1);
+                        continue;
+                    }
+
+                }
+
+                if (py1 < 0) py1 = 0;
+                if (py1 > 398) py1 = 398;
+
+                if (fire == true) {
+                    if (firedelay >= 30 && ammo > 0) {
+                        var tofire = new rocket(0, py1);
+                        missiles.push(tofire);
+                        firedelay = 0;
+                        ammo--;
+                    }
+                    firedelay++;
+                }
+
+                if (spawnTime == 45) {
+                    spawnTime = 0;
+
+                    var roll = Math.floor((Math.random() * 10));
+
+                    if (roll < 1) spawnAmmo();
+                    else if (roll < 8) spawnMonster();
+                }
+                score++;
+                spawnTime++;
+                renderGame();
+            }
+
+            function spawnAmmo() {
+                var spawn = new ammoclass(800, Math.floor((Math.random() * 480)));
+                ammos.push(spawn);
+            }
+
+            function spawnMonster() {
+                var spawn = new monster(800, Math.floor((Math.random() * 480)), Math.floor((Math.random() * 3) + 1));
+                monsters.push(spawn);
+            }
+
+            function renderTitleScreen() {
+                if (tics++ > 60) tics = 0;
+                ctx2.font = "32px Helvetica";
+                ctx2.textAlign = "left";
+                ctx2.drawImage(titleScreen, 0, 0);
+                if (tics < 30) {
+                    ctx2.fillStyle = "#00FFFF";
+                    ctx2.fillText("Click to start", 600, 470);
+                }
+
+                ctx2.fillStyle = "#FFFFFF";
+                ctx2.fillText("W = Move Up", 40, 60);
+                ctx2.fillText("S = Move Down", 40, 92);
+                ctx2.fillText("Spacebar to shoot", 40, 124);
+                ctx2.drawImage(rocketimg, 320, 108);
+                ctx2.stroke();
+
+                ctx2.fillStyle = "#FF0000";
+                ctx2.fillText("Kill", 40, 182);
+                ctx2.drawImage(enemy, 120, 136);
+
+
+                ctx2.fillStyle = "#0000FF";
+                ctx2.fillText("Grab Ammo", 40, 284);
+                ctx2.drawImage(ammoimg, 256, 256);
+                ctx2.stroke();
+            }
+
+            function renderGame() {
+                ctx2.drawImage(background, bx1, 0);
+                ctx2.drawImage(background, bx2, 0);
+                ctx2.drawImage(player, 0, py1);
+
+                bx1--;
+                bx2--;
+
+                if (bx2 == 0) bx1 = 786;
+                if (bx1 == 0) bx2 = 786;
+
+                for (var i = 0; i < missiles.length; i++) {
+                    ctx2.drawImage(rocketimg, missiles[i].x, missiles[i].y);
+                }
+
+                for (var i = 0; i < ammos.length; i++) {
+                    ctx2.drawImage(ammoimg, ammos[i].x, ammos[i].y);
+                }
+
+                for (var i = 0; i < monsters.length; i++) {
+                    ctx2.drawImage(enemy, monsters[i].x, monsters[i].y);
+                }
+
+                ctx2.fillStyle = "#FFFF00";
+                ctx2.fillText("AMMO: " + ammo, 624, 476);
+                ctx2.fillStyle = "#00FF00";
+                ctx2.fillText("HEALTH: " + health, 10, 476);
+                ctx2.fillStyle = "#FF00FF";
+                ctx2.fillText(score, 786 / 2, 476);
+                ctx2.stroke();
+            }
+
+            document.onkeydown = function(e) {
+                switch (e.keyCode) {
+                    case 87:
+                        movedir = 1;
+                        break;
+                    case 83:
+                        movedir = 2;
+                        break;
+                    case 32:
+                        fire = true;
+                        break;
+                }
+            }
+
+            document.onkeyup = function(e) {
+                switch (e.keyCode) {
+                    case 87:
+                        if (movedir == 1) movedir = 0;
+                        break;
+                    case 83:
+                        if (movedir == 2) movedir = 0;
+                        break;
+                    case 32:
+                        if(fire == true)
+                        fire = false;
+                        break;
+                }
+            }
+        })
+        canvas2.addEventListener('click', function() {
+            if (started == false) {
+                started = true;
+                ctx2.clearRect(0, 0, canvas2.width, canvas2.height);
+                ctx2.stroke();
+            }
+            if (gameOver == true) {
+                restartGame();
+            }
+        }, false);
+    </script>
+</body>
+
+</html>
