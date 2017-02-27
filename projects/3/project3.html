@@ -187,7 +187,11 @@
 
                 for (var i = 0; i < ammos.length; i++) {
                     ammos[i].x -= 6;
-                    if (ammos[i].x < -200) ammos.splice(i, 1);
+                    if (ammos[i].x < -200)
+                    {
+                        ammos.splice(i, 1);
+                        continue;
+                    }
                     if (checkCollision(0, py1, 80, 82, ammos[i].x, ammos[i].y, 108, 42)) {
                         ammo += 5;
                         ammos.splice(i, 1);
