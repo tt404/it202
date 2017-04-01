@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script>
+        var pos;
+
+        // check for Geolocation support
+        if (navigator.geolocation) {
+            console.log('Geolocation is supported!');
+            navigator.geolocation.getCurrentPosition(function(position) {
+                console.log(position);
+                pos = position;
+            });
+        }
+
+        else {
+            console.log('Geolocation is not supported for this Browser/OS.');
+        }
+
+        var url = "https://data.cityofchicago.org/resource/6zsd-86xi.json";
+
+        url += "?$where=within_circle(location, " +
+            pos.coords.latitude +
+            "," +
+            pos.coords.longitude +
+            ", 500)";
+
+        $.getJSON(url).done(function(data) {
+            console.log(data);
+        })
+    </script>
+</head>
