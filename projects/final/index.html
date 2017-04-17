@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en" style="overflow: hidden">
+
+<head>
+    <meta charset="utf-8">
+    <title>jQuery.parseXML demo</title>
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <script src="https://unpkg.com/dexie@latest/dist/dexie.js"></script>
+    <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="css/business-casual.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Josefin+Slab:100,300,400,600,700,100italic,300italic,400italic,600italic,700italic" rel="stylesheet" type="text/css">
+
+
+    <style>
+        .mdl-layout__header {
+            background-color: rgb(77, 77, 77);
+        }
+        
+        .mdl-material-icons {
+            background-color: rgb(77, 77, 77);
+        }
+        
+        .mdl-layout__tab-bar-right-button {
+            background-color: rgb(77, 77, 77);
+        }
+        
+        .mdl-js-ripple-effect--ignore-events {
+            background-color: rgb(77, 77, 77);
+        }
+        
+        .mdl-layout__tab-bar-left-button {
+            background-color: rgb(77, 77, 77);
+        }
+        
+        .mdl-layout__tab:hover {
+            color: rgb(255, 255, 255);
+        }
+        
+        .mdl-card {
+            margin-right: auto;
+            margin-left: auto;
+            position: relative
+        }
+        
+        .mdl-js-textfield {
+            margin-right: auto;
+            margin-left: auto;
+            text-align: center
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Simple header with scrollable tabs. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <!-- Title -->
+                <img src="" alt="Avatar" height="64" width="64" id="bimg">
+                <span class="mdl-layout-title" id="bname"></span>
+            </div>
+            <!-- Tabs -->
+            <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+                <a href="#scroll-tab-1" class="mdl-layout__tab is-active">Quick Play</a>
+                <a href="#scroll-tab-2" class="mdl-layout__tab">Competitive</a>
+                <a href="#scroll-tab-3" class="mdl-layout__tab">History</a>
+            </div>
+        </header>
+
+        <main class="mdl-layout__content">
+            <div class="demo-blog mdl-layout mdl-js-layout has-drawer is-upgraded">
+                <main class="mdl-layout__content">
+
+                    <section class="mdl-layout__tab-panel is-active" id="scroll-tab-1">
+
+                        <div class="demo-blog__posts mdl-grid">
+
+
+                            <div class="mdl-card amazing mdl-cell mdl-cell--12-col">
+                                <div class="mdl-card__title mdl-color-text--grey-50">
+                                    <div class="mdl-textfield mdl-js-textfield" id="qpwins">
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+
+                        <div class="demo-blog__posts mdl-grid">
+
+
+                            <div class="mdl-card amazing mdl-cell mdl-cell--12-col">
+                                <div class="mdl-card__title mdl-color-text--grey-50">
+                                    <div class="mdl-textfield mdl-js-textfield" id="qptime">
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </section>
+
+
+
+                    <section class="mdl-layout__tab-panel" id="scroll-tab-2">
+
+                        <center><img src="" alt="Avatar" height="96" width="96" id="brankimg"></center>
+
+                        <div class="demo-blog__posts mdl-grid">
+
+
+                            <div class="mdl-card amazing mdl-cell mdl-cell--12-col">
+                                <div class="mdl-card__title mdl-color-text--grey-50">
+                                    <div class="mdl-textfield mdl-js-textfield" id="compplayed">
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                        </div>
+
+                        <div class="demo-blog__posts mdl-grid">
+
+                            <div class="mdl-card amazing mdl-cell mdl-cell--12-col">
+                                <div class="mdl-card__title mdl-color-text--grey-50">
+                                    <div class="mdl-textfield mdl-js-textfield" id="compwins">
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="demo-blog__posts mdl-grid">
+
+                            <div class="mdl-card amazing mdl-cell mdl-cell--12-col">
+                                <div class="mdl-card__title mdl-color-text--grey-50">
+                                    <div class="mdl-textfield mdl-js-textfield" id="comptime">
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="demo-blog__posts mdl-grid">
+
+
+                            <div class="mdl-card amazing mdl-cell mdl-cell--12-col">
+                                <div class="mdl-card__title mdl-color-text--grey-50">
+                                    <div class="mdl-textfield mdl-js-textfield" id="comprank">
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="mdl-layout__tab-panel" id="scroll-tab-3">
+
+                        <div class="mdl-card amazing mdl-cell mdl-cell--12-col">
+                            <div class="mdl-card__title mdl-color-text--grey-50">
+                                <div class="mdl-textfield mdl-js-textfield" id="history">
+
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+
+                </main>
+
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+                <script>
+                    var name, bid;
+                    $(function() {
+                        // Extract the data from the url.
+                        var url = window.location.href;
+
+                        var name_start = url.indexOf("name=") + 5;
+                        var name_end = url.indexOf('&', name_start);
+                        name = url.substring(name_start, name_end);
+
+                        var id_start = url.indexOf("id=") + 3;
+                        var id_end = url.length;
+                        bid = url.substring(id_start, id_end);
+
+
+                        var data;
+                        var apiPassThruUrl = "https://polar-garden-75406.herokuapp.com/apiPassThru.php";
+                        var apiEndpoint = "https://final-overwatch.herokuapp.com/profile/pc/us/" + name + "-" + bid;
+
+                        $.ajax({
+                            url: apiPassThruUrl,
+                            dataType: "json",
+                            method: 'GET',
+                            data: {
+                                "apiEndpoint": apiEndpoint,
+                                "key": "gkaQ23znYPJa48MfEGiWN7Rmx",
+                                "format": "json"
+                            }
+                        }).done(function(data) {
+                            console.log("Success!");
+                            setupDb(data, window.location.href);
+                        });
+
+
+                    });
+
+
+                    function setupDb(data, apiEndpoint) {
+                        // Setup DB
+
+                        var db = new Dexie('owDBfinal-');
+                        db.version(1).stores({
+                            stats: '++id,url,username,level,portrait,levelframe,star,quickplaywins,playtimequickplay,competitivewins,competitiveplayed,playtimecompetitive,competitiverank,competitiverankimg'
+                        });
+
+
+                        var username = data["username"];
+                        var level = data["level"];
+                        var portrait = data["portrait"];
+
+                        var games = data["games"];
+                        var gamesqp = games["quickplay"];
+                        var gamesqpwins = gamesqp["wins"];
+
+                        var gamescomp = games["competitive"];
+                        var gamescompwins = gamescomp["wins"];
+                        var gamescompplayed = gamescomp["played"];
+
+                        var playtime = data["playtime"];
+                        var playtimeqp = playtime["quickplay"];
+                        var playtimecomp = playtime["competitive"];
+
+                        var competitive = data["competitive"];
+                        var competitiverank = competitive["rank"];
+                        var competitiverankimg = competitive["rank_img"];
+                        var competitiveframe = competitive["levelFrame"];
+                        var competitivestar = competitive["star"];
+
+
+                        $("#bname").text(' ' + username + "#" + bid + " - " + "LVL" + data["level"]);
+                        $("#bimg").attr("src", data["portrait"]);
+                        $("#qptime").text("Time Played - " + playtimeqp);
+                        $("#qpwins").text("Games Won - " + gamesqpwins);
+
+                        $("#comprank").text("Current Rank - " + competitiverank);
+                        $("#comptime").text("Time Played - " + playtimecomp);
+                        $("#compplayed").text("Games Played - " + gamescompplayed);
+                        $("#compwins").text("Games Won - " + gamescompwins);
+                        $("#brankimg").attr("src", competitive["rank_img"]);
+
+                        var t = 0;
+
+                        db.stats
+                            .where('username')
+                            .startsWith(username)
+                            .each(function(test) {
+                                console.log("Found " + test.username);
+                                t++;
+                            });
+
+                        window.setTimeout(function() {
+                            if (t == 0) {
+                                console.log("Adding " + username);
+                                db.stats.add({
+                                    url: apiEndpoint,
+                                    username: data["username"],
+                                    level: data["level"],
+                                    portrait: data["portrait"],
+                                    levelframe: competitive["levelFrame"],
+                                    star: competitive["star"],
+                                    quickplaywins: gamesqp["wins"],
+                                    playtimequickplay: playtime["quickplay"],
+                                    competitivewins: gamescomp["wins"],
+                                    competitiveplayed: gamescomp["played"],
+                                    playtimecompetitive: playtime["competitive"],
+                                    competitiverank: competitive["rank"],
+                                    competitiverankimg: competitive["rank_img"]
+                                });
+                            }
+                            
+                            var count = 0;
+                            var hist = document.getElementById('history');
+                             db.stats
+                            .each(function(test) {
+                                if(test.username == username && count++ == 1) return;
+                                hist.innerHTML = hist.innerHTML + "<a href=\"" + test.url + "\">" + test.username + "</a>" + " <br>";
+                            });
+                        }, 300);
+                    }
+                </script>
+</body>
+
+</html>
