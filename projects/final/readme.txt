@@ -22,6 +22,3 @@ before. A compare function was planned but I couldn't get to it.
 
 I've shown it to my friends and the feedback I got was that it looked really 
 sleek but lacked features. Which is understandable as the data is limited.
-
-That's all from me.
-
